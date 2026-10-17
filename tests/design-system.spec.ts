@@ -97,9 +97,9 @@ test("mobile menu closes with Escape and after navigation", async ({
   await trigger.click();
   await page
     .getByRole("navigation", { name: "Mobile navigation" })
-    .getByRole("link", { name: "Perspective" })
+    .getByRole("link", { name: "About", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/#perspective$/);
+  await expect(page).toHaveURL(/\/about$/);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 

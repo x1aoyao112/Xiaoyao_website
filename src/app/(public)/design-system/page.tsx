@@ -9,7 +9,12 @@ import { MetricCard, FinancialTable } from "@/components/ui/financial";
 import { EmptyState, LoadingState } from "@/components/ui/states";
 import { ComponentSandbox } from "@/components/design-system/component-sandbox";
 
-export const metadata: Metadata = { title: "Design language" };
+export const metadata: Metadata = {
+  title: "Design language",
+  description:
+    "The color, typography, and component studies behind XY's Side Notes.",
+  robots: { index: false, follow: false },
+};
 
 const swatches = [
   { name: "Butter yellow", hex: "#FFF0B8", className: "bg-butter text-navy" },

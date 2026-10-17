@@ -14,9 +14,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fonts:prepare": "node scripts/prepare-fonts.mjs",
-    "predev": "npm run fonts:prepare",
-    "prebuild": "npm run fonts:prepare",
-    "pretypecheck": "npm run fonts:prepare"
+    "predev": "npm run fonts:prepare && npm run assets:prepare",
+    "prebuild": "npm run fonts:prepare && npm run assets:prepare",
+    "pretypecheck": "npm run fonts:prepare && npm run assets:prepare",
+    "assets:prepare": "node scripts/prepare-assets.mjs",
+    "test:content": "npm run assets:prepare && node --test tests/content.test.mjs",
+    "test:fixtures": "node scripts/test-content-fixtures.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.3.1",

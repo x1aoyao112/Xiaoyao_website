@@ -115,6 +115,9 @@
   .page-shell {
     @apply mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16;
   }
+  .portfolio-section {
+    @apply mt-14 border-t border-border pt-10 sm:mt-20 sm:pt-12;
+  }
   .eyebrow {
     @apply font-sans text-sm font-medium;
   }
