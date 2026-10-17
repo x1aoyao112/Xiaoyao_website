@@ -1,10 +1,24 @@
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, BookOpen, MoveUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Eyebrow, SectionHeading } from "@/components/ui/typography";
 
+import { profile } from "@/content/profile";
+import {
+  publicProjects,
+  publicJournal,
+  publicCurrently,
+} from "@/content/public";
+import { ProjectCard, ArticleCard } from "@/components/portfolio/content-cards";
+import { TextLink } from "@/components/portfolio/text-link";
+import { safeExternalUrl } from "@/lib/content";
+
 export default function HomePage() {
+  const featured = publicProjects
+    .filter((project) => project.featured)
+    .slice(0, 3);
+  const articles = publicJournal.slice(0, 3);
   return (
     <main id="main-content" className="page-shell">
       <section className="grid items-center gap-14 pt-16 pb-20 sm:pt-24 lg:grid-cols-[1.6fr_1fr] lg:gap-16 lg:pb-28">
@@ -54,77 +68,76 @@ export default function HomePage() {
       </section>
       <section
         id="perspective"
-        className="border-t border-border pt-12 sm:pt-16"
+        className="grid gap-7 border-t border-border py-14 sm:py-20 md:grid-cols-[1fr_1.5fr] md:gap-14"
       >
-        <div className="mb-9 flex flex-wrap items-end justify-between gap-6">
-          <SectionHeading
-            eyebrow="The perspective"
-            title="Serious about possibilities."
-            description="A student mindset. An analytical eye. Room for a life beyond the spreadsheet."
-          />
-          <MoveUpRight
-            aria-hidden="true"
-            className="hidden size-8 text-editorial sm:block"
-          />
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card
-            tone="butter"
-            className="flex min-h-80 flex-col justify-between"
-          >
-            <div className="flex items-start justify-between">
-              <Eyebrow>Curiosity, first.</Eyebrow>
-              <BookOpen aria-hidden="true" className="size-5" />
-            </div>
-            <div className="mt-12">
-              <h3 className="text-3xl tracking-tight">
-                More questions.
-                <br />
-                Better perspectives.
-              </h3>
-              <p className="mt-4 max-w-sm text-sm leading-6">
-                Exploring the intersections of business, finance, and technology
-                — and learning to connect the dots.
-              </p>
-            </div>
-          </Card>
-          <Card
-            tone="powder"
-            className="flex min-h-80 flex-col justify-between"
-          >
-            <div className="flex items-start justify-between">
-              <Eyebrow>Intention, always.</Eyebrow>
-              <ArrowUpRight aria-hidden="true" className="size-5" />
-            </div>
-            <div className="mt-12">
-              <h3 className="text-3xl tracking-tight">
-                A clear head.
-                <br />
-                An open horizon.
-              </h3>
-              <p className="mt-4 max-w-sm text-sm leading-6">
-                Space to study deeply, build thoughtfully, and enjoy the
-                everyday. Ambition with a sense of balance.
-              </p>
-            </div>
-          </Card>
-        </div>
-      </section>
-      <section className="mt-16 flex flex-wrap items-center justify-between gap-8 rounded-card border border-border p-6 sm:p-10">
-        <div>
-          <h2 className="text-2xl tracking-tight">
-            A system with a point of view.
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Warmth in the details. Clarity in the structure.
+        <h2 className="section-title text-editorial">A little about me</h2>
+        <div className="max-w-xl">
+          <p className="body-copy text-muted-foreground">
+            {profile.introduction}
           </p>
+          <div className="mt-5">
+            <TextLink href="/about">More about me</TextLink>
+          </div>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/design-system">
-            Explore the design language <ArrowUpRight aria-hidden="true" />
-          </Link>
-        </Button>
       </section>
+      <section className="border-t border-border py-14 sm:py-20">
+        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+          <SectionHeading title="Selected work" />
+          <TextLink href="/work">View all work</TextLink>
+        </div>
+        {featured.length ? (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((project) => (
+              <ProjectCard key={project.slug} project={project} heading="h3" />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Published projects will appear here when there’s work to share.
+          </p>
+        )}
+      </section>
+      {articles.length > 0 && (
+        <section className="border-t border-border py-14 sm:py-20">
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+            <SectionHeading title="From the Journal" />
+            <TextLink href="/journal">Visit the Journal</TextLink>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((entry) => (
+              <ArticleCard key={entry.slug} entry={entry} heading="h3" />
+            ))}
+          </div>
+        </section>
+      )}
+      {publicCurrently.length > 0 && (
+        <section className="border-t border-border py-14 sm:py-20">
+          <SectionHeading title="Currently" />
+          <dl className="mt-8 grid gap-8 md:grid-cols-2">
+            {publicCurrently.map((note) => (
+              <div key={note.label}>
+                <dt className="font-medium">{note.label}</dt>
+                <dd className="mt-3 text-sm leading-7 text-muted-foreground">
+                  {note.text}
+                  {note.link &&
+                    note.link.label.trim() &&
+                    safeExternalUrl(note.link.url) && (
+                      <a
+                        href={safeExternalUrl(note.link.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 block underline underline-offset-4"
+                      >
+                        {note.link.label}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
     </main>
   );
 }

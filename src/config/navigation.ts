@@ -1,7 +1,18 @@
 import type { NavigationItem } from "@/types";
 
-// Public destinations only. Never advertise a private route before authentication.
 export const publicNavigation = [
-  { label: "Perspective", href: "/#perspective" },
-  { label: "Design language", href: "/design-system" },
+  { label: "Home", href: "/" },
+  { label: "Work", href: "/work" },
+  { label: "About", href: "/about" },
+  { label: "Journal", href: "/journal" },
+  { label: "Contact", href: "/contact" },
 ] as const satisfies readonly NavigationItem[];
+export const recruiterNavigation = {
+  label: "Recruiter Mode",
+  href: "/recruiter",
+} as const;
+export function isActivePath(pathname: string, href: string) {
+  return href === "/"
+    ? pathname === "/"
+    : pathname === href || pathname.startsWith(`${href}/`);
+}

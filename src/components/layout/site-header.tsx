@@ -4,7 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
-import { publicNavigation } from "@/config/navigation";
+import {
+  publicNavigation,
+  recruiterNavigation,
+  isActivePath,
+} from "@/config/navigation";
+import { siteConfig } from "@/config/site";
+import { BrandMark } from "@/components/layout/brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,50 +23,63 @@ import {
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader() {
+export function SiteHeader({ ownerName }: { ownerName: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navClass = (href: string) =>
+    cn(
+      "ui-transition inline-flex min-h-11 items-center text-sm hover:text-foreground",
+      isActivePath(pathname, href)
+        ? "font-medium text-foreground underline decoration-border underline-offset-8"
+        : "text-muted-foreground",
+    );
   return (
     <header className="page-shell">
-      <div className="flex min-h-24 items-center justify-between gap-4 border-b border-border">
+      <div className="flex min-h-24 items-center justify-between gap-3 border-b border-border">
         <Link
           href="/"
-          aria-label="The Xiaoyao System home"
+          aria-label={`${siteConfig.name} home`}
           className="flex items-center gap-2 sm:gap-3"
         >
-          <span
-            aria-hidden="true"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-xl text-primary-foreground"
-          >
-            x.
-          </span>
-          <span className="text-[10px] font-semibold whitespace-nowrap tracking-[0.02em] sm:text-xs">
-            THE XIAOYAO SYSTEM
+          <BrandMark />
+          <span className="text-sm font-medium whitespace-nowrap sm:text-base">
+            {siteConfig.name}
           </span>
         </Link>
-        <div className="flex items-center gap-2 sm:gap-6">
+        <div className="flex items-center gap-1 lg:gap-5">
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-7 md:flex"
+            className="hidden items-center gap-5 lg:flex"
           >
             {publicNavigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                aria-current={pathname === item.href ? "page" : undefined}
-                className={cn(
-                  "ui-transition text-xs hover:text-foreground",
-                  pathname === item.href
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
+                aria-current={
+                  isActivePath(pathname, item.href) ? "page" : undefined
+                }
+                className={navClass(item.href)}
               >
                 {item.label}
               </Link>
             ))}
           </nav>
+          <Link
+            href={recruiterNavigation.href}
+            aria-current={
+              isActivePath(pathname, recruiterNavigation.href)
+                ? "page"
+                : undefined
+            }
+            className={cn(
+              navClass(recruiterNavigation.href),
+              "hidden border-l border-border pl-5 lg:inline-flex",
+            )}
+          >
+            {recruiterNavigation.label}
+          </Link>
           <ThemeToggle />
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -73,23 +92,29 @@ export function SiteHeader() {
               </DialogTrigger>
               <DialogContent>
                 <DialogTitle className="section-title pr-8">
-                  Find your way.
+                  {siteConfig.name}
                 </DialogTitle>
                 <DialogDescription className="mt-3 text-sm text-muted-foreground">
-                  A little perspective. A considered design language.
+                  Work, notes, and a little about {ownerName}.
                 </DialogDescription>
                 <nav
                   aria-label="Mobile navigation"
-                  className="mt-8 flex flex-col gap-2"
+                  className="mt-6 flex flex-col"
                 >
-                  {publicNavigation.map((item) => (
+                  {[...publicNavigation, recruiterNavigation].map((item) => (
                     <DialogClose key={item.href} asChild>
                       <Link
                         href={item.href}
                         aria-current={
-                          pathname === item.href ? "page" : undefined
+                          isActivePath(pathname, item.href) ? "page" : undefined
                         }
-                        className="rounded-xl px-4 py-4 text-lg hover:bg-muted"
+                        className={cn(
+                          "rounded-xl px-4 py-3 text-base hover:bg-muted",
+                          isActivePath(pathname, item.href) &&
+                            "bg-muted font-medium",
+                          item.href === "/recruiter" &&
+                            "mt-3 border-t border-border",
+                        )}
                       >
                         {item.label}
                       </Link>

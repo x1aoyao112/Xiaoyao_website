@@ -4,7 +4,8 @@ const base = process.env.SMOKE_BASE_URL || "http://127.0.0.1:3000";
 const home = await fetch(new URL("/", base));
 assert.equal(home.status, 200);
 const html = await home.text();
-assert.match(html, /THE XIAOYAO SYSTEM/);
+assert.match(html, /XY(?:&#x27;|&apos;|')s Side Notes/);
+assert.doesNotMatch(html, /THE XIAOYAO SYSTEM/);
 const headline = html
   .match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]
   .replace(/<[^>]*>/g, "");

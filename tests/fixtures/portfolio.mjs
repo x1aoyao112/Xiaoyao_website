@@ -1,0 +1,80 @@
+// Synthetic test data only. Never import this module from application code.
+export const projects = [
+  {
+    slug: "published-fixture",
+    title: "Published fixture project",
+    category: "Finance",
+    summary: "Synthetic published project for testing.",
+    tools: ["Fixture tool"],
+    published: true,
+    featured: true,
+    recruiterRelevant: true,
+    overview: ["Fixture overview."],
+    myRole: ["My individual fixture contribution."],
+    results: ["A fixture team outcome."],
+    objective: [],
+    links: [
+      { label: "Unsafe link", url: "javascript:alert(1)" },
+      {
+        label: "Fixture repository",
+        url: "https://github.com/x1aoyao112/Xiaoyao_website",
+      },
+    ],
+  },
+  {
+    slug: "second-fixture",
+    title: "Second fixture project",
+    category: "Personal Projects",
+    summary: "Another synthetic published project.",
+    tools: [],
+    published: true,
+  },
+  {
+    slug: "draft-fixture",
+    title: "Secret draft fixture project",
+    category: "Accounting",
+    summary: "This must not be exposed.",
+    tools: [],
+    published: false,
+    featured: true,
+    recruiterRelevant: true,
+  },
+];
+export const journal = [
+  {
+    slug: "published-note",
+    title: "Published fixture note",
+    category: "Technology",
+    excerpt: "A synthetic article excerpt.",
+    date: "2026-10-01",
+    tags: ["fixture"],
+    published: true,
+    sections: [
+      { paragraphs: ["A fixture article paragraph."] },
+      {
+        heading: "Fixture section",
+        paragraphs: ["A second fixture paragraph."],
+      },
+    ],
+  },
+  {
+    slug: "second-note",
+    title: "Second fixture note",
+    category: "Personal Notes",
+    excerpt: "A second synthetic article.",
+    date: "2026-10-02",
+    tags: [],
+    published: true,
+    sections: [{ paragraphs: ["Another fixture paragraph."] }],
+  },
+  {
+    slug: "draft-note",
+    title: "Secret draft fixture note",
+    category: "University Life",
+    excerpt: "This must not be exposed.",
+    date: "2026-10-03",
+    tags: [],
+    published: false,
+    sections: [{ paragraphs: ["Private fixture text."] }],
+  },
+];

@@ -1,13 +1,10 @@
-# THE XIAOYAO SYSTEM
+# XY's Side Notes
 
-Sprint 2 design system built on the Sprint 1 foundation for an owner-only personal operating system and professional portfolio. English-only, with Apple-inspired restraint, a young visionary perspective, and financial-terminal precision. The public homepage and `/design-system` component gallery establish the signature visual language. No dashboard features, authentication, or Supabase integration are implemented.
+Xiaoyao's public portfolio and personal archive, built on the existing Next.js App Router, TypeScript, Tailwind, Zodiak/Switzer design system. **THE XIAOYAO SYSTEM** remains the internal codename for a future private OS; it is not the public brand. Sprint 3 adds public portfolio pages without a CMS, database, contact backend, or authentication.
 
-## Requirements
+## Run locally
 
-- Node.js 24 LTS (see `.nvmrc`); npm included with Node.
-- No accounts, API keys, database, or environment variables are required for Sprint 1.
-
-## Setup and development
+Use Node.js 24 (pinned in `.nvmrc`) and npm:
 
 ```bash
 git clone https://github.com/x1aoyao112/Xiaoyao_website.git
@@ -18,76 +15,133 @@ npm ci
 npm run dev
 ```
 
-The development server listens on port 3000. If you do not use nvm, install Node.js 24 directly and omit the two nvm commands.
+If not using nvm, install Node.js 24 and omit the two nvm commands. The server uses port 3000. No secrets or environment variables are required. Never commit real `.env` files or credentials; `.env.example` is a credential-free template.
 
-`.env.example` is a credential-free template for future configuration. There is no need to copy it in this sprint. When future configuration is introduced, use `.env.local` locally and your hosting provider's secure environment settings for production. Never commit real `.env` files, passwords, or API keys.
-
-## Validation and production
+For production, including Vercel:
 
 ```bash
-npm run lint
-npm run typecheck
 npm run build
 npm run start
 ```
 
-With the production server running, in another terminal:
+Set Vercel's Build Command to **`npm run build`** so preparation hooks run. First-time builders need HTTPS access to `api.fontshare.com`. Fontshare's license permits this site's self-hosting but prohibits public font repository redistribution: original binaries are downloaded from official archives, checksum-verified, and ignored by Git. Browsers receive preloaded local font assets. See [font provenance and license notes](src/app/fonts/README.md).
+
+Before development, type checking, and builds, hooks also inventory real files in `public/`. Missing assets and invalid PDF/image headers do not produce public media or download links. After adding a file while the dev server is running, run `npm run assets:prepare`; restarting development also refreshes the inventory. No repository-wide runtime filesystem tracing is needed.
+
+## Public routes
+
+| Route             | Purpose                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| `/`               | Approved hero, short introduction, real featured work, optional journal/current notes |
+| `/about`          | Editable biography, education, optional skills and personal content                   |
+| `/work`           | Published projects and populated category filters                                     |
+| `/work/[slug]`    | Reusable case studies; drafts and unknown slugs return 404                            |
+| `/journey`        | Education and future verified experience in chronological order                       |
+| `/journal`        | Published articles with populated category filters                                    |
+| `/journal/[slug]` | Long-form articles; drafts and unknown slugs return 404                               |
+| `/contact`        | Configured contact methods; no contact form backend                                   |
+| `/recruiter`      | Restrained professional profile with optional resume and verified work                |
+| `/design-system`  | Existing illustrative component gallery, excluded from indexing/sitemap               |
+
+`/workspace` remains unconditionally unavailable (404). Route groups do not provide authentication. Do not add private data or bypass the guards; authentication, owner authorization, Supabase, and row-level security belong to a later phase.
+
+## Edit content without changing page layouts
+
+All portfolio data is local TypeScript under `src/content/`. Empty fields deliberately produce hidden sections or restrained empty states. No sample achievements or projects are published.
+
+| File              | What to edit                                                                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `profile.ts`      | Name, introduction, draft About paragraphs, education, interests, optional real portrait/beyond-academics sections, resume configuration |
+| `social-links.ts` | Email, LinkedIn, GitHub, optional additional HTTPS social links                                                                          |
+| `projects.ts`     | Original projects and case studies, publication/feature/recruiter flags                                                                  |
+| `journal.ts`      | Original articles, categories, tags, publication dates and sections                                                                      |
+| `experience.ts`   | Verified work, leadership, education or milestones; the initial NTU entry is derived from `profile.ts`                                   |
+| `skills.ts`       | Confirmed grouped skills only; no inferred proficiency levels                                                                            |
+| `currently.ts`    | Genuine current reading, study, exploration or building notes                                                                            |
+
+Structured types live in `src/types/content.ts`. Public selectors live in `src/content/public.ts`; listing/detail/SEO consumers use the same publication gates. Keep each slug unique across both drafts and published entries. Incomplete/invalid or conflicting entries are excluded rather than producing misleading public pages. Content paragraphs are plain text, escaped by React; no HTML or Markdown execution is supported.
+
+### Update profile, education and photos
+
+Edit `profile.ts`. The confirmed education is NTU, **Bachelor of Business**, **2026–2030 (Expected)**. Education blocks, the timeline and recruiter graduation year derive from that record. If facts change, also update any prose in the introduction and About paragraphs. Add only confirmed information. Leave unknown interests, skills, activities, photos and stories empty.
+
+Store genuine images in `public/images/` using simple filenames (letters, digits, hyphens, underscores; PNG, JPEG, WebP or AVIF). Set a content image's `src` to `/images/your-file.jpg` with accurate `width`, `height` and descriptive `alt`; `caption` is optional. Images are optimized with Next.js Image. Missing images, unsupported formats, invalid dimensions or blank alt text stay hidden. Remote images and stock substitutes are not used. Files placed in `public/` are public; never put confidential material there.
+
+### Update LinkedIn, GitHub and email
+
+Edit `social-links.ts`:
+
+- `email`: your actual email address, without `mailto:`.
+- `linkedin`: your full HTTPS LinkedIn profile URL.
+- `github`: your full HTTPS GitHub profile URL.
+- `otherSocialLinks`: optional `{ label, url }` entries with genuine HTTPS destinations.
+
+Leave unsupplied values as `""`. Invalid values, mismatched platforms and placeholder domains are hidden. Email addresses are safely encoded; external links open with `noopener noreferrer` and an accessible new-tab label. Rebuild and deploy to publish edits. Network availability/account ownership is not verified by syntactic URL validation.
+
+### Add a resume PDF
+
+1. Put your real resume at `public/resume.pdf` (or a simple nested local PDF path).
+2. In `profile.ts`, set `resume.url` to `/resume.pdf` and keep or edit `resume.label`.
+3. Rebuild and deploy. Recruiter Mode displays the download only if the local file exists and has a PDF header.
+
+An empty URL, missing file, non-PDF file, or remote URL hides the download. Remote PDFs are intentionally unsupported so unverified external downloads cannot appear. No fake resume is bundled.
+
+### Publish a project
+
+Add an object to `projects.ts` using the `PortfolioProject` type. Required fields: `slug`, `title`, `category`, `summary`, `tools`, `published`. Use lowercase hyphenated slugs; keep them unique. Supported categories can include Finance, Accounting, Data & Python, Business & Marketing, and Personal Projects; only populated published categories become filters.
+
+Optional case-study fields are paragraph arrays: `overview`, `objective`, `myRole`, `approach`, `results`, `learned`. Describe **your individual contribution** under `myRole`; distinguish group results in the outcome text. Do not invent metrics or achievements. Optional `coverImage`, `artifacts` and `{ label, url }` links are validated; empty detail sections are omitted.
+
+Start with `published: false`. When the real content is ready, set `published: true`; use `featured: true` for homepage selection (up to three), and `recruiterRelevant: true` for Recruiter Mode selection (up to three). Rebuild/deploy. Drafts never enter public listings, detail metadata or sitemap paths; direct draft URLs return 404. The repository is public, so a draft flag is **not** confidentiality protection for its source. Never commit private information in drafts.
+
+### Publish a journal entry
+
+Add a `JournalEntry` to `journal.ts` with `slug`, `title`, `category`, `excerpt`, a real `date` in `YYYY-MM-DD`, `tags`, `sections`, and `published`. A section has optional `heading`, `paragraphs: string[]`, and an optional local content image. A `coverImage` is optional. At least one real paragraph is required for publication.
+
+Keep `published: false` until ready. Set it to `true`, rebuild, and deploy. Listings sort newest first, format dates consistently in UTC, and show only categories with published articles. Tags appear on the article. Drafts/invalid dates/duplicate slugs are excluded. No scheduled publication is implied by the date; the flag controls publication.
+
+### Update Currently, skills or experience
+
+Add `{ label, text, link? }` to `currently.ts` for real current activities; the optional link needs a meaningful label and safe HTTPS URL. The section is hidden when empty. Add confirmed `{ title, skills: string[] }` groups in `skills.ts` and verified timeline records in `experience.ts`. `sortYear` sorts newest first; `period` is the human-readable display text. No proficiency level, job title, achievement or hobby is inferred automatically.
+
+## SEO and branding
+
+`src/config/site.ts` owns public branding. Set its `url` to your actual production origin if needed; on Vercel, `VERCEL_PROJECT_PRODUCTION_URL` is used automatically when available. No domain is invented. Without an origin, local sitemap output is empty and absolute canonical URLs are omitted. Page titles, descriptions and Open Graph site names use **XY's Side Notes**. Preview deployments are marked noindex. `robots.txt` excludes the private workspace and component gallery; access protection still comes from the server-side 404 guards.
+
+## Reusable presentation
+
+`src/components/portfolio/` contains PageIntro, ProjectCard, ArticleCard, CategoryFilter, PortfolioImage, ContentSections, EducationBlock, SkillsList, Timeline, SocialLinks, ResumeLink and TextLink. They reuse existing buttons, surface tokens and typography. Public navigation and active-route rules are centralized in `src/config/navigation.ts`. Font families and palette remain unchanged. See [the design system guide](docs/design-system.md).
+
+## Verification
 
 ```bash
-npm run test:smoke
+npm run format:check
+npm run check
+npm run test:content
+npm run build
 ```
 
-The smoke check verifies the English public holding page and HTTP 404 responses for `/workspace`, nested workspace paths, and query-string variants. For a different port, run `SMOKE_BASE_URL=http://127.0.0.1:3001 npm run test:smoke`. `npm run check` combines lint and type checking. Type checking generates Next.js route types before running TypeScript.
-
-## Structure
-
-```text
-src/
-  app/
-    layout.tsx                 Shared English document and metadata
-    globals.css                Tailwind and design tokens
-    (public)/                  Public holding page and layout
-    (private)/                 Fail-closed future private route group
-      workspace/page.tsx       Unconditionally unavailable
-  components/ui/button.tsx     shadcn-style reusable Button primitive
-  config/                      Typed site and route configuration
-  features/                    Future domain modules
-  hooks/                       Future shared client hooks
-  lib/utils.ts                 Tailwind-aware class merging
-  types/                       Shared TypeScript contracts
-scripts/smoke.mjs               HTTP readiness and private-route checks
-components.json                shadcn/ui generator configuration
-```
-
-Stack: Next.js App Router, strict TypeScript, Tailwind CSS v4, shadcn/ui conventions with Radix, Motion, and Lucide. `@/*` resolves to `src/*`. Motion is installed for future interactions. Theme controls, mobile navigation, and the component sandbox use small client boundaries; primary page content remains server-rendered. Use `motion/react` only in client components and respect reduced-motion preferences. The lockfile fixes the dependency graph; use `npm ci` for repeatable installation. Zodiak and Switzer are self-hosted with `next/font/local`. The first development run, type check, or production build downloads the original files directly from Fontshare and verifies pinned SHA-256 checksums; subsequent runs reuse verified local files. Font binaries are intentionally ignored by Git under their license.
-
-## Private access contract
-
-Only the generic homepage and illustrative component gallery are public. `/workspace` always calls server-side `notFound()` in both its page and private layout, including in production. There is no environment flag to unlock it. Route groups are organizational, not security boundaries. No private data, API endpoints, or Supabase clients exist in this sprint.
-
-Before implementing any private functionality, add verified server-side authentication, explicit owner authorization at each data-access entry point, and Supabase row-level security. A layout alone does not protect route handlers, server actions, or data-fetching code. Keep private routes disabled until those checks exist and are tested. The current `noindex` metadata discourages indexing but is not access control.
-
-## Scope and next sprint
-
-Authentication, Supabase integration, portfolio content, and workspace features are deferred. Do not put personal data in the public page or repository. Future CI/deployment should run `npm ci`, `npm run check`, `npm run build`, and smoke checks against the running production build.
-
-## Signature design system (Sprint 2)
-
-See [the design system guide](docs/design-system.md) for semantic color roles, section moods, component APIs, accessibility rules, and responsive behavior. Explore `/design-system` for buttons, pastel bento widgets, financial table/metrics, loading/empty states, and an unsaved form/dialog sandbox. All gallery figures are explicitly illustrative. The header includes a persistent light/dark toggle and responsive mobile navigation. Private route guards are unchanged.
-
-### Browser verification
+For real browser checks:
 
 ```bash
 npx playwright install chromium
 npm run test:ui
 ```
 
-The suite builds and starts a separate production server on port 3100. It checks both color themes with axe, theme persistence, keyboard controls and dialogs, mobile navigation, responsive overflow, reduced motion, and private-route 404s. In a cloud environment with system Chromium, use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui` instead of downloading a browser. Install browser OS dependencies with your platform package manager if Playwright reports them missing.
+In this cloud environment, system Chromium is available:
 
-Formatting is standardized with Prettier: run `npm run format` to format files or `npm run format:check` to verify formatting. Browser traces and test result files are ignored by Git.
+```bash
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui
+```
 
-## Public typography
+Browser tests start a separate production build/server on port 3100. They cover navigation, branding, metadata, empty states, unconfigured links/resume, responsive overflow at 320/375/430/tablet/desktop, themes, accessibility, keyboard controls, original homepage copy/fonts and font-loading stability. Native content tests use clearly synthetic test-only fixtures for publication gates, filters, social URL validation, asset checks and sitemap exclusion. Application content files never import the fixtures.
 
-Zodiak (editorial headlines) and Switzer (body, UI, and tabular data) are the only public design families. See [font source and license notes](src/app/fonts/README.md). `npm run fonts:prepare` explicitly prepares them; `predev`, `pretypecheck`, and `prebuild` also run it automatically. There are no new dependencies or API keys.
+To exercise published detail pages and positive contact/resume configuration without adding fictitious portfolio content, run:
 
-For Vercel, use **Build Command: `npm run build`** so the font preparation hook runs. Fresh builders need HTTPS access to `api.fontshare.com`. Visitors receive preloaded, cached, same-origin font assets rather than depending on Fontshare at runtime. A download or integrity failure stops setup/build instead of silently changing the typography.
+```bash
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:fixtures
+```
+
+This creates a disposable copy under the OS temporary directory, reuses installed dependency files, adds synthetic test-only records, builds it, and checks project/category navigation, article rendering, safe external links, an optional image, resume download, sitemap publication gates and direct draft 404s on port 3120. It then removes the copy. Allow roughly 1 GB of temporary disk space; real application content files remain unchanged. Omit the Chromium environment variable when using Playwright's installed browser.
+
+With a production server running, `npm run test:smoke` checks the homepage, component gallery and private-route 404s; set `SMOKE_BASE_URL` for another port. Use `npm run format` to format edits. Font binaries, generated asset inventory, browser traces and test results are ignored by Git.

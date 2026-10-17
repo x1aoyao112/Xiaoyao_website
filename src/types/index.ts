@@ -5,4 +5,5 @@ export type SiteConfig = Readonly<{
   description: string;
   locale: "en";
   access: AccessMode;
+  url?: string;
 }>;
