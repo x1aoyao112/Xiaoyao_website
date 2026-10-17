@@ -1,29 +1,173 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Brand primitives stay constant; semantic roles adapt to the color scheme. */
 :root {
-  --background: #fafaf9;
-  --foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #fafaf9;
-  --muted: #f0f0ee;
-  --muted-foreground: #6b6b65;
-  --border: #e3e3df;
-  --ring: #73736a;
-  --radius: 0.75rem;
+  --butter: #fff0b8;
+  --powder: #dcebfa;
+  --ivory: #faf9f6;
+  --navy: #142d4e;
+  --gold: #e9b949;
+  --obsidian: #17191d;
+  --silver: #a5a7a9;
+  --background: var(--ivory);
+  --foreground: var(--obsidian);
+  --surface: #ffffff;
+  --primary: var(--navy);
+  --primary-foreground: var(--ivory);
+  --muted: #efeee9;
+  --muted-foreground: #58616d;
+  --border: #d8d9d7;
+  --input: #7c8490;
+  --ring: #3565a0;
+  --accent: var(--butter);
+  --accent-foreground: var(--navy);
+  --editorial: var(--navy);
+  --terminal: var(--navy);
+  --terminal-foreground: var(--ivory);
+  --terminal-muted: #bdcbdc;
+  --financial-emphasis: var(--gold);
+  --radius: 1.25rem;
+  --duration: 180ms;
+}
+
+.dark {
+  --background: #101820;
+  --foreground: var(--ivory);
+  --surface: #192636;
+  --primary: var(--powder);
+  --primary-foreground: var(--navy);
+  --muted: #233245;
+  --muted-foreground: #b3bfcc;
+  --border: #3c4c60;
+  --input: #8394a9;
+  --ring: var(--gold);
+  --editorial: var(--powder);
+  --terminal: #0c1420;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-editorial: var(--editorial);
+  --color-butter: var(--butter);
+  --color-powder: var(--powder);
+  --color-ivory: var(--ivory);
+  --color-navy: var(--navy);
+  --color-gold: var(--gold);
+  --color-obsidian: var(--obsidian);
+  --color-silver: var(--silver);
+  --color-terminal: var(--terminal);
+  --color-terminal-foreground: var(--terminal-foreground);
+  --color-terminal-muted: var(--terminal-muted);
+  --color-financial-emphasis: var(--financial-emphasis);
+  --radius-card: var(--radius);
   --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
   --font-mono: "SFMono-Regular", Consolas, monospace;
 }
 
-body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
-::selection { background: #dcdcd5; }
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:not(:disabled),
+  select {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+  ::selection {
+    background: var(--butter);
+    color: var(--navy);
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16;
+  }
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium tracking-[0.14em] uppercase;
+  }
+  .display {
+    @apply text-5xl font-medium leading-[1.04] tracking-[-0.065em] sm:text-7xl lg:text-[6.5rem];
+  }
+  .section-title {
+    @apply text-3xl font-medium leading-tight tracking-[-0.045em] sm:text-4xl;
+  }
+  .body-copy {
+    @apply text-base leading-7;
+  }
+  .ui-transition {
+    transition-duration: var(--duration);
+    transition-property:
+      color, background-color, border-color, opacity, transform, box-shadow;
+  }
+  .dialog-overlay {
+    animation: fade-in var(--duration) ease-out;
+  }
+  .dialog-content {
+    animation: dialog-in var(--duration) ease-out;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
