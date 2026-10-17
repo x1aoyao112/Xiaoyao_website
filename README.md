@@ -1,6 +1,6 @@
 # THE XIAOYAO SYSTEM
 
-Sprint 1 foundation for an owner-only personal operating system and professional portfolio. English-only, with Apple-inspired restraint, a young visionary perspective, and financial-terminal precision. This sprint creates the project structure and a public holding page; it does not implement a dashboard, authentication, or Supabase.
+Sprint 2 design system built on the Sprint 1 foundation for an owner-only personal operating system and professional portfolio. English-only, with Apple-inspired restraint, a young visionary perspective, and financial-terminal precision. The public homepage and `/design-system` component gallery establish the signature visual language. No dashboard features, authentication, or Supabase integration are implemented.
 
 ## Requirements
 
@@ -59,14 +59,29 @@ scripts/smoke.mjs               HTTP readiness and private-route checks
 components.json                shadcn/ui generator configuration
 ```
 
-Stack: Next.js App Router, strict TypeScript, Tailwind CSS v4, shadcn/ui conventions with Radix, Motion, and Lucide. `@/*` resolves to `src/*`. Motion is installed for future interactions; the static holding page intentionally has no animation or client bundle requirement. Use `motion/react` only in client components and respect reduced-motion preferences. The lockfile fixes the dependency graph; use `npm ci` for repeatable installation. System fonts avoid build-time font downloads.
+Stack: Next.js App Router, strict TypeScript, Tailwind CSS v4, shadcn/ui conventions with Radix, Motion, and Lucide. `@/*` resolves to `src/*`. Motion is installed for future interactions. Theme controls, mobile navigation, and the component sandbox use small client boundaries; primary page content remains server-rendered. Use `motion/react` only in client components and respect reduced-motion preferences. The lockfile fixes the dependency graph; use `npm ci` for repeatable installation. System fonts avoid build-time font downloads.
 
 ## Private access contract
 
-Only the generic holding page is public. `/workspace` always calls server-side `notFound()` in both its page and private layout, including in production. There is no environment flag to unlock it. Route groups are organizational, not security boundaries. No private data, API endpoints, or Supabase clients exist in this sprint.
+Only the generic homepage and illustrative component gallery are public. `/workspace` always calls server-side `notFound()` in both its page and private layout, including in production. There is no environment flag to unlock it. Route groups are organizational, not security boundaries. No private data, API endpoints, or Supabase clients exist in this sprint.
 
 Before implementing any private functionality, add verified server-side authentication, explicit owner authorization at each data-access entry point, and Supabase row-level security. A layout alone does not protect route handlers, server actions, or data-fetching code. Keep private routes disabled until those checks exist and are tested. The current `noindex` metadata discourages indexing but is not access control.
 
 ## Scope and next sprint
 
 Authentication, Supabase integration, portfolio content, and workspace features are deferred. Do not put personal data in the public page or repository. Future CI/deployment should run `npm ci`, `npm run check`, `npm run build`, and smoke checks against the running production build.
+
+## Signature design system (Sprint 2)
+
+See [the design system guide](docs/design-system.md) for semantic color roles, section moods, component APIs, accessibility rules, and responsive behavior. Explore `/design-system` for buttons, pastel bento widgets, financial table/metrics, loading/empty states, and an unsaved form/dialog sandbox. All gallery figures are explicitly illustrative. The header includes a persistent light/dark toggle and responsive mobile navigation. Private route guards are unchanged.
+
+### Browser verification
+
+```bash
+npx playwright install chromium
+npm run test:ui
+```
+
+The suite builds and starts a separate production server on port 3100. It checks both color themes with axe, theme persistence, keyboard controls and dialogs, mobile navigation, responsive overflow, reduced motion, and private-route 404s. In a cloud environment with system Chromium, use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui` instead of downloading a browser. Install browser OS dependencies with your platform package manager if Playwright reports them missing.
+
+Formatting is standardized with Prettier: run `npm run format` to format files or `npm run format:check` to verify formatting. Browser traces and test result files are ignored by Git.
