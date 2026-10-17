@@ -38,8 +38,7 @@ export default function DesignSystemPage() {
         <h1 className="display max-w-4xl text-editorial">
           Young in spirit.
           <br />
-          <span className="font-serif font-normal italic">Considered</span> in
-          detail.
+          Considered in detail.
         </h1>
         <p className="body-copy mt-8 max-w-xl text-muted-foreground">
           Editorial warmth meets analytical clarity. A shared visual language
@@ -69,7 +68,7 @@ export default function DesignSystemPage() {
               className={`flex min-h-36 flex-col justify-between rounded-card p-5 ${swatch.className}`}
             >
               <span className="text-sm font-medium">{swatch.name}</span>
-              <span className="mt-7 font-mono text-xs">{swatch.hex}</span>
+              <span className="mt-7 font-sans text-xs">{swatch.hex}</span>
             </div>
           ))}
         </div>
@@ -78,7 +77,7 @@ export default function DesignSystemPage() {
         <SectionHeading
           eyebrow="02 / Typography"
           title="Expressive headlines. Precise details."
-          description="A modern sans-serif for clarity, an editorial serif for personality, and monospace for information that needs to align."
+          description="Switzer for clarity, Zodiak for editorial expression, and tabular numerals for information that needs to align."
         />
         <Card>
           <div className="grid gap-10 md:grid-cols-[2fr_1fr]">
@@ -86,10 +85,10 @@ export default function DesignSystemPage() {
               <Eyebrow className="mb-6 text-muted-foreground">
                 Editorial / Display
               </Eyebrow>
-              <p className="text-5xl leading-tight tracking-[-0.05em] sm:text-6xl">
+              <p className="font-serif text-5xl leading-tight tracking-[-0.025em] sm:text-6xl">
                 Think clearly.
                 <br />
-                <span className="font-serif italic">Stay curious.</span>
+                Stay curious.
               </p>
             </div>
             <div className="space-y-6">
@@ -105,7 +104,7 @@ export default function DesignSystemPage() {
                 <Eyebrow className="mb-2 text-muted-foreground">
                   Data / Tabular figures
                 </Eyebrow>
-                <p className="font-mono text-3xl tabular-nums">12,480.00</p>
+                <p className="font-sans text-3xl tabular-nums">12,480.00</p>
               </div>
             </div>
           </div>
@@ -152,7 +151,7 @@ export default function DesignSystemPage() {
         />
         <BentoGrid>
           <DashboardWidget title="Academic HQ" label="Sample" tone="butter">
-            <p className="font-serif text-3xl italic">
+            <p className="font-serif text-3xl">
               A little further,
               <br />
               every day.
@@ -167,7 +166,7 @@ export default function DesignSystemPage() {
             />
           </DashboardWidget>
           <DashboardWidget title="My Day" label="Sample" tone="powder">
-            <p className="font-serif text-3xl italic">
+            <p className="font-serif text-3xl">
               Room to focus.
               <br />
               Space to breathe.

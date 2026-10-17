@@ -13,7 +13,7 @@ The public `/design-system` page is a component gallery with explicitly illustra
 
 Light mode uses ivory with navy/obsidian text. Dark mode uses charcoal/navy surfaces and ivory text. Pastel cards retain their brand colors and navy text in both modes. Terminal cards use light text on dark navy. Nested components inherit surface-specific muted text and focus colors. Never pair ivory text with pastel surfaces or silver small text with ivory.
 
-`next-themes` initializes from the system preference, avoids the wrong-theme flash, persists manual toggles locally, and updates across tabs. The toggle has an accessible label and no hydration-dependent icon markup. No remote fonts are required.
+`next-themes` initializes from the system preference, avoids the wrong-theme flash, persists manual toggles locally, and updates across tabs. The toggle has an accessible label and no hydration-dependent icon markup. Zodiak and Switzer are loaded locally with `next/font/local`; browsers do not contact Fontshare. See `src/app/fonts/README.md` for licensing and the verified first-party build download.
 
 ## Component map
 
@@ -32,7 +32,7 @@ Light mode uses ivory with navy/obsidian text. Dark mode uses charcoal/navy surf
 
 Personal/academic/day surfaces use butter and powder prominently. Career uses ivory and navy with selective pastels. Finance uses terminal surfaces and restrained gold. Recruiter/resume uses the neutral foundation. `src/config/design-system.ts` records these reusable section defaults; it does not create routes or access permissions.
 
-Spacing follows Tailwind's 4px scale, cards share a 20px radius, controls use 12px corners, actions use pills. Sans-serif carries interface and body text; Georgia italic adds editorial personality; monospace aligns labels and metrics. Page shells cap width at 1280px with consistent responsive gutters. Layouts progress from one column to two or three; tables scroll within their own region.
+Spacing follows Tailwind's 4px scale, cards share a 20px radius, controls use 12px corners, actions use pills. Switzer carries interface and body text; Zodiak adds editorial personality to major headings. Tabular numerals align metrics without a third family. Labels use sentence case and natural spacing. Page shells cap width at 1280px with consistent responsive gutters. Layouts progress from one column to two or three; tables scroll within their own region.
 
 Transitions use the shared 180ms duration, visible focus outlines, restrained hover feedback, and no automatic page entrances. All animation/transition durations and smooth scrolling respect `prefers-reduced-motion`. The intentionally small number of CSS transitions does not require a Motion client wrapper; Motion remains available for later interactive features. Keep core content visible without animation.
 

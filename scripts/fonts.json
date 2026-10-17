@@ -1,0 +1,34 @@
+[
+  {
+    "family": "Zodiak",
+    "url": "https://api.fontshare.com/v2/fonts/download/zodiak",
+    "files": [
+      {
+        "file": "Zodiak-Variable.woff2",
+        "member": "Zodiak_Complete/Fonts/WEB/fonts/Zodiak-Variable.woff2",
+        "sha256": "fbc0b605217b43e22005ec128d5939a3334efc3eef24f13830fa5bf2fcd13a68"
+      }
+    ]
+  },
+  {
+    "family": "Switzer",
+    "url": "https://api.fontshare.com/v2/fonts/download/switzer",
+    "files": [
+      {
+        "file": "Switzer-Regular.woff2",
+        "member": "Switzer_Complete/Fonts/WEB/fonts/Switzer-Regular.woff2",
+        "sha256": "aefa3d21af6adb6dd53246ff86e1d8e7eaf36a8d792dd59136cced309e3c8862"
+      },
+      {
+        "file": "Switzer-Medium.woff2",
+        "member": "Switzer_Complete/Fonts/WEB/fonts/Switzer-Medium.woff2",
+        "sha256": "2ea341e35c0d0d00c13adec869b573297d25326140ca40fbe354a9bee468808e"
+      },
+      {
+        "file": "Switzer-Semibold.woff2",
+        "member": "Switzer_Complete/Fonts/WEB/fonts/Switzer-Semibold.woff2",
+        "sha256": "04084ce10f3b185156408adf5540cabbed149e039d6f3c3e8e5b2fb17f6bdef8"
+      }
+    ]
+  }
+]

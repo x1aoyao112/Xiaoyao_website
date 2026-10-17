@@ -16,7 +16,7 @@ export function Progress({
     <div className={cn("space-y-3", className)}>
       <div className="flex justify-between gap-4 text-sm">
         <span>{label}</span>
-        <span className="font-mono tabular-nums">{safeValue}%</span>
+        <span className="font-sans tabular-nums">{safeValue}%</span>
       </div>
       <div
         role="progressbar"

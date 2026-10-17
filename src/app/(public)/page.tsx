@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  BookOpen,
-  Compass,
-  MoveUpRight,
-} from "lucide-react";
+import { ArrowDown, ArrowUpRight, BookOpen, MoveUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Eyebrow, SectionHeading } from "@/components/ui/typography";
@@ -15,30 +9,25 @@ export default function HomePage() {
     <main id="main-content" className="page-shell">
       <section className="grid items-center gap-14 pt-16 pb-20 sm:pt-24 lg:grid-cols-[1.6fr_1fr] lg:gap-16 lg:pb-28">
         <div>
-          <Eyebrow className="mb-8 flex items-center gap-3 text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-editorial" /> A personal
-            operating system
+          <Eyebrow className="mb-8 text-muted-foreground">
+            {"Xiaoyao's corner of the internet"}
           </Eyebrow>
           <h1 className="display text-editorial">
-            A life built
+            {"A work in "}
             <br />
-            with{" "}
-            <span className="font-serif font-normal italic">intention.</span>
+            progress.
           </h1>
-          <p className="body-copy mt-8 max-w-md text-muted-foreground">
-            Curious about business. Inspired by technology.
-            <br className="hidden sm:block" /> Building a thoughtful life, one
-            idea at a time.
+          <p className="body-copy mt-8 min-h-21 max-w-md text-muted-foreground sm:min-h-14">
+            {
+              "A little about what I do, what I like, and what I'm figuring out along the way."
+            }
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-5">
-            <Button asChild>
+            <Button asChild className="min-w-48 justify-between">
               <Link href="#perspective">
                 A little perspective <ArrowDown aria-hidden="true" />
               </Link>
             </Button>
-            <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
-              ALWAYS A STUDENT.
-            </span>
           </div>
         </div>
         <div className="relative lg:pt-10">
@@ -46,32 +35,20 @@ export default function HomePage() {
             tone="powder"
             className="relative min-h-80 overflow-hidden p-8 pb-16 sm:min-h-96 sm:p-10 sm:pb-16"
           >
-            <div className="flex justify-between">
-              <Eyebrow>Notes to self / 001</Eyebrow>
-              <Compass aria-hidden="true" className="size-5" />
-            </div>
+            <Eyebrow>A note to myself</Eyebrow>
             <div
               aria-hidden="true"
-              className="my-9 flex h-28 items-center justify-center"
+              className="mx-auto my-9 grid h-28 w-32 grid-cols-[5rem_3rem] items-center justify-center"
             >
-              <span className="font-serif text-9xl italic tracking-tighter">
-                x
-              </span>
+              <span className="font-serif text-9xl">x</span>
               <ArrowUpRight className="size-12 self-start" />
             </div>
-            <p className="max-w-60 text-2xl leading-tight tracking-tight">
-              Stay curious.
-              <br />
-              Think clearly.
-              <br />
-              Make something matter.
+            <p className="max-w-64 text-2xl leading-snug font-medium">
+              Some things are worth figuring out.
             </p>
-            <div className="mt-8 border-t border-navy/25 pt-4 font-mono text-[10px] tracking-widest">
-              LEARNING → BUILDING → BECOMING
-            </div>
           </Card>
-          <span className="absolute -right-2 -bottom-5 -rotate-6 rounded-xl bg-butter px-5 py-4 font-serif text-lg italic text-navy sm:right-5">
-            A little ambition, a lot of possibility.
+          <span className="absolute -right-2 -bottom-5 -rotate-6 w-64 rounded-xl bg-butter px-5 py-4 text-center text-sm font-medium text-navy sm:right-5">
+            Made with too many open tabs.
           </span>
         </div>
       </section>
@@ -81,7 +58,7 @@ export default function HomePage() {
       >
         <div className="mb-9 flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="01 / The perspective"
+            eyebrow="The perspective"
             title="Serious about possibilities."
             description="A student mindset. An analytical eye. Room for a life beyond the spreadsheet."
           />
@@ -135,9 +112,6 @@ export default function HomePage() {
       </section>
       <section className="mt-16 flex flex-wrap items-center justify-between gap-8 rounded-card border border-border p-6 sm:p-10">
         <div>
-          <Eyebrow className="mb-3 text-muted-foreground">
-            02 / Made with intention
-          </Eyebrow>
           <h2 className="text-2xl tracking-tight">
             A system with a point of view.
           </h2>

@@ -26,15 +26,15 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="The Xiaoyao System home"
-          className="flex items-center gap-3"
+          className="flex items-center gap-2 sm:gap-3"
         >
           <span
             aria-hidden="true"
-            className="flex size-9 items-center justify-center rounded-full bg-primary font-serif text-xl text-primary-foreground"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary font-serif text-xl text-primary-foreground"
           >
             x.
           </span>
-          <span className="text-[10px] font-semibold tracking-[0.13em] sm:text-xs">
+          <span className="text-[10px] font-semibold whitespace-nowrap tracking-[0.02em] sm:text-xs">
             THE XIAOYAO SYSTEM
           </span>
         </Link>
