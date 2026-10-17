@@ -1,3 +1,4 @@
+import { profile } from "@/content/profile";
 import { publicProjects } from "@/content/public";
 import { categories, filterCategory } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
@@ -7,7 +8,7 @@ import { ProjectCard } from "@/components/portfolio/content-cards";
 
 export const metadata = pageMetadata(
   "Work",
-  "Projects and case studies by Xiaoyao, collected as they are ready to share.",
+  `Projects and case studies by ${profile.name}, collected as they are ready to share.`,
   "/work",
 );
 export default async function WorkPage({

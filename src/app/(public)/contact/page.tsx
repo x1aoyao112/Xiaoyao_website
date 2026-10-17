@@ -1,3 +1,4 @@
+import { profile } from "@/content/profile";
 import { publicSocialLinks } from "@/content/public";
 import { pageMetadata } from "@/lib/metadata";
 import { PageIntro } from "@/components/portfolio/page-intro";
@@ -5,7 +6,7 @@ import { SocialLinks } from "@/components/portfolio/social-links";
 
 export const metadata = pageMetadata(
   "Contact",
-  "Get in touch with Xiaoyao through the contact methods listed on XY's Side Notes.",
+  `Get in touch with ${profile.name} through the contact methods listed on XY's Side Notes.`,
   "/contact",
 );
 export default function ContactPage() {

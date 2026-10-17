@@ -1,3 +1,4 @@
+import { profile } from "@/content/profile";
 import { publicJournal } from "@/content/public";
 import { categories, filterCategory } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
@@ -7,7 +8,7 @@ import { CategoryFilter } from "@/components/portfolio/category-filter";
 
 export const metadata = pageMetadata(
   "Journal",
-  "Ideas, reflections, and things Xiaoyao is learning, collected in XY's Side Notes.",
+  `Ideas, reflections, and things ${profile.name} is learning, collected in XY's Side Notes.`,
   "/journal",
 );
 export default async function JournalPage({

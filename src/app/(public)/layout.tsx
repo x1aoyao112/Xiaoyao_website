@@ -1,3 +1,4 @@
+import { profile } from "@/content/profile";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -14,7 +15,7 @@ export default function PublicLayout({
       >
         Skip to content
       </a>
-      <SiteHeader />
+      <SiteHeader ownerName={profile.name} />
       {children}
       <SiteFooter />
     </div>

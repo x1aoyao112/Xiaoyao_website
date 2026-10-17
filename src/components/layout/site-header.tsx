@@ -23,7 +23,7 @@ import {
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader() {
+export function SiteHeader({ ownerName }: { ownerName: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const navClass = (href: string) =>
@@ -95,7 +95,7 @@ export function SiteHeader() {
                   {siteConfig.name}
                 </DialogTitle>
                 <DialogDescription className="mt-3 text-sm text-muted-foreground">
-                  Work, notes, and a little about Xiaoyao.
+                  Work, notes, and a little about {ownerName}.
                 </DialogDescription>
                 <nav
                   aria-label="Mobile navigation"
