@@ -59,7 +59,7 @@ scripts/smoke.mjs               HTTP readiness and private-route checks
 components.json                shadcn/ui generator configuration
 ```
 
-Stack: Next.js App Router, strict TypeScript, Tailwind CSS v4, shadcn/ui conventions with Radix, Motion, and Lucide. `@/*` resolves to `src/*`. Motion is installed for future interactions. Theme controls, mobile navigation, and the component sandbox use small client boundaries; primary page content remains server-rendered. Use `motion/react` only in client components and respect reduced-motion preferences. The lockfile fixes the dependency graph; use `npm ci` for repeatable installation. System fonts avoid build-time font downloads.
+Stack: Next.js App Router, strict TypeScript, Tailwind CSS v4, shadcn/ui conventions with Radix, Motion, and Lucide. `@/*` resolves to `src/*`. Motion is installed for future interactions. Theme controls, mobile navigation, and the component sandbox use small client boundaries; primary page content remains server-rendered. Use `motion/react` only in client components and respect reduced-motion preferences. The lockfile fixes the dependency graph; use `npm ci` for repeatable installation. Zodiak and Switzer are self-hosted with `next/font/local`. The first development run, type check, or production build downloads the original files directly from Fontshare and verifies pinned SHA-256 checksums; subsequent runs reuse verified local files. Font binaries are intentionally ignored by Git under their license.
 
 ## Private access contract
 
@@ -85,3 +85,9 @@ npm run test:ui
 The suite builds and starts a separate production server on port 3100. It checks both color themes with axe, theme persistence, keyboard controls and dialogs, mobile navigation, responsive overflow, reduced motion, and private-route 404s. In a cloud environment with system Chromium, use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui` instead of downloading a browser. Install browser OS dependencies with your platform package manager if Playwright reports them missing.
 
 Formatting is standardized with Prettier: run `npm run format` to format files or `npm run format:check` to verify formatting. Browser traces and test result files are ignored by Git.
+
+## Public typography
+
+Zodiak (editorial headlines) and Switzer (body, UI, and tabular data) are the only public design families. See [font source and license notes](src/app/fonts/README.md). `npm run fonts:prepare` explicitly prepares them; `predev`, `pretypecheck`, and `prebuild` also run it automatically. There are no new dependencies or API keys.
+
+For Vercel, use **Build Command: `npm run build`** so the font preparation hook runs. Fresh builders need HTTPS access to `api.fontshare.com`. Visitors receive preloaded, cached, same-origin font assets rather than depending on Fontshare at runtime. A download or integrity failure stops setup/build instead of silently changing the typography.

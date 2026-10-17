@@ -46,3 +46,7 @@ next-env.d.ts
 # Browser verification artifacts
 /test-results/
 /playwright-report/
+
+# Fontshare permits site self-hosting, not public repository redistribution.
+/src/app/fonts/*.woff2
+/src/app/fonts/*.tmp

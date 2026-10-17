@@ -26,7 +26,7 @@ export function MetricCard({
       >
         {label}
       </p>
-      <p className="mt-5 font-mono text-4xl tracking-tight tabular-nums">
+      <p className="mt-5 font-sans text-4xl tracking-tight tabular-nums">
         {value}
       </p>
       {note && <p className="mt-3 text-sm text-muted-foreground">{note}</p>}
@@ -76,7 +76,7 @@ export function FinancialTable({
                 key={heading}
                 scope="col"
                 className={cn(
-                  "px-6 py-3 font-mono text-[11px] font-medium uppercase tracking-wide",
+                  "px-6 py-3 font-sans text-[11px] font-medium",
                   heading === "Amount" && "text-right",
                 )}
               >
@@ -97,7 +97,7 @@ export function FinancialTable({
               <td className="px-6 py-4 text-muted-foreground">
                 {row.category}
               </td>
-              <td className="whitespace-nowrap px-6 py-4 text-right font-mono tabular-nums">
+              <td className="whitespace-nowrap px-6 py-4 text-right font-sans tabular-nums">
                 {format.format(row.amount)}
               </td>
               <td className="px-6 py-4">{row.status}</td>

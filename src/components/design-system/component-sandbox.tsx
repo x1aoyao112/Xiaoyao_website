@@ -107,7 +107,7 @@ export function ComponentSandbox() {
       <Card tone={tone} className="flex flex-col justify-between gap-12">
         <div>
           <Badge tone="neutral">Interactive preview</Badge>
-          <h3 className="mt-8 break-words font-serif text-4xl leading-tight italic">
+          <h3 className="mt-8 break-words font-serif text-4xl leading-tight">
             {title.trim() || "A thought in progress"}
           </h3>
           <p className="mt-5 max-w-sm text-sm leading-6">

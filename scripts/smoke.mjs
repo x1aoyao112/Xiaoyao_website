@@ -5,7 +5,14 @@ const home = await fetch(new URL("/", base));
 assert.equal(home.status, 200);
 const html = await home.text();
 assert.match(html, /THE XIAOYAO SYSTEM/);
-assert.match(html, /A life built/);
+const headline = html
+  .match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]
+  .replace(/<[^>]*>/g, "");
+assert.equal(headline, "A work in progress.");
+assert.doesNotMatch(
+  html,
+  /A life built|ALWAYS A STUDENT|LEARNING → BUILDING → BECOMING/,
+);
 assert.match(html, /lang="en"/);
 const gallery = await fetch(new URL("/design-system", base));
 assert.equal(gallery.status, 200);
