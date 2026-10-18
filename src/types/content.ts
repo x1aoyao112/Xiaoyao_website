@@ -5,6 +5,8 @@ export type ContentImage = Readonly<{
   height: number;
   caption?: string;
 }>;
+export type PersonalPhoto = ContentImage & Readonly<{ order: number }>;
+
 export type ContentSection = Readonly<{
   heading?: string;
   paragraphs: readonly string[];

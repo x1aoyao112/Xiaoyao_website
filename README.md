@@ -52,6 +52,7 @@ All portfolio data is local TypeScript under `src/content/`. Empty fields delibe
 | File              | What to edit                                                                                                                             |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `profile.ts`      | Name, introduction, draft About paragraphs, education, interests, optional real portrait/beyond-academics sections, resume configuration |
+| `about-photos.ts` | Little Moments photographs and display order                                                                                             |
 | `social-links.ts` | Email, LinkedIn, GitHub, optional additional HTTPS social links                                                                          |
 | `projects.ts`     | Original projects and case studies, publication/feature/recruiter flags                                                                  |
 | `journal.ts`      | Original articles, categories, tags, publication dates and sections                                                                      |
@@ -66,6 +67,45 @@ Structured types live in `src/types/content.ts`. Public selectors live in `src/c
 Edit `profile.ts`. The confirmed education is NTU, **Bachelor of Business**, **2026–2030 (Expected)**. Education blocks, the timeline and recruiter graduation year derive from that record. If facts change, also update any prose in the introduction and About paragraphs. Add only confirmed information. Leave unknown interests, skills, activities, photos and stories empty.
 
 Store genuine images in `public/images/` using simple filenames (letters, digits, hyphens, underscores; PNG, JPEG, WebP or AVIF). Set a content image's `src` to `/images/your-file.jpg` with accurate `width`, `height` and descriptive `alt`; `caption` is optional. Images are optimized with Next.js Image. Missing images, unsupported formats, invalid dimensions or blank alt text stay hidden. Remote images and stock substitutes are not used. Files placed in `public/` are public; never put confidential material there.
+
+### Portrait and Little Moments
+
+1. Add your own photograph to `public/images/`, for example `portrait.jpg`. Use simple filenames, and note its original pixel dimensions.
+2. In `src/content/profile.ts`, replace `portrait: undefined` with your image record:
+
+   ```ts
+   portrait: {
+     src: "/images/portrait.jpg",
+     alt: "Your accurate description of the photograph",
+     width: 1200,
+     height: 1600,
+     caption: "", // Optional; write your own caption.
+   },
+   ```
+
+3. For the gallery, edit `moments` in `src/content/about-photos.ts`. Each entry uses the same image fields plus a numeric `order`:
+
+   ```ts
+   export const moments: readonly PersonalPhoto[] = [
+     {
+       src: "/images/my-photo.jpg",
+       alt: "Your accurate description",
+       width: 1600,
+       height: 1067,
+       caption: "", // Optional.
+       order: 10,
+     },
+   ];
+   ```
+
+4. Add/remove array entries to add/remove photos. Change `caption` to edit captions; lower `order` values display first (ties preserve array order). Use each source once. Portrait and landscape photos retain their original aspect ratios without cropping or stretching; the gallery alternates vertical spacing on desktop and stacks on mobile.
+5. Run `npm run assets:prepare` after adding/changing files during development. Verify locally with `npm run dev`. Run `npm run build`, commit your content and genuine photos on a feature branch, then deploy through your normal PR/Vercel workflow. Build preparation refreshes the asset inventory automatically.
+
+No portrait produces a text-first introduction; no valid gallery entries hides **Little moments.** entirely. A missing file, blank alt text, invalid dimensions or invalid gallery order never creates a public empty frame. No stock or test photographs are bundled on the site. Keep an interest's `description` empty until you have your own explanation; its confirmed topic can still appear without filler. Remove its whole entry to hide the topic.
+
+### Homepage previews
+
+The homepage shows Selected Work only when published **featured** projects exist, Journal only when published entries exist, and Currently only when genuine activities are configured. Empty previews omit their headings, links and spacing. Full Work and Journal routes remain available with minimal empty states.
 
 ### Update LinkedIn, GitHub and email
 

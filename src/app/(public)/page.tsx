@@ -20,7 +20,7 @@ export default function HomePage() {
     .slice(0, 3);
   const articles = publicJournal.slice(0, 3);
   return (
-    <main id="main-content" className="page-shell">
+    <main id="main-content" className="page-shell [&>section:last-child]:pb-0">
       <section className="grid items-center gap-14 pt-16 pb-20 sm:pt-24 lg:grid-cols-[1.6fr_1fr] lg:gap-16 lg:pb-28">
         <div>
           <Eyebrow className="mb-8 text-muted-foreground">
@@ -80,23 +80,19 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <section className="border-t border-border py-14 sm:py-20">
-        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
-          <SectionHeading title="Selected work" />
-          <TextLink href="/work">View all work</TextLink>
-        </div>
-        {featured.length ? (
+      {featured.length > 0 && (
+        <section className="border-t border-border py-14 sm:py-20">
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+            <SectionHeading title="Selected work" />
+            <TextLink href="/work">View all work</TextLink>
+          </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {featured.map((project) => (
               <ProjectCard key={project.slug} project={project} heading="h3" />
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Published projects will appear here when there’s work to share.
-          </p>
-        )}
-      </section>
+        </section>
+      )}
       {articles.length > 0 && (
         <section className="border-t border-border py-14 sm:py-20">
           <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">

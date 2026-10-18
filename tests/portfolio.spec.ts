@@ -65,6 +65,27 @@ test("empty content is quiet, with no empty filters or unconfigured links", asyn
   await expect(
     page.getByRole("heading", { name: "From the Journal" }),
   ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Selected work" }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "View all work" })).toHaveCount(
+    0,
+  );
+  await expect(page.locator("main > section")).toHaveCount(2);
+  await page.goto("/about");
+  await expect(page.locator("main img")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Little moments." }),
+  ).toHaveCount(0);
+  await expect(page.locator("main dl dt")).toHaveText([
+    "Business & Finance",
+    "Technology",
+    "Ideas & Projects",
+  ]);
+  await expect(page.locator("main dl dd")).toHaveCount(0);
+  await expect(page.locator("main")).not.toContainText(
+    /An interest in how|Another area I'd like|A space to collect/,
+  );
   await page.goto("/work");
   await expect(page.getByText(/No published projects yet/)).toBeVisible();
   await expect(

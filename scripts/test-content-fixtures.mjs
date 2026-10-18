@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { once } from "node:events";
 import { deflateSync, crc32 } from "node:zlib";
 import assert from "node:assert/strict";
+import AxeBuilder from "@axe-core/playwright";
 import { chromium, expect } from "@playwright/test";
 import { projects, journal } from "../tests/fixtures/portfolio.mjs";
 import { profile } from "../src/content/profile.ts";
@@ -49,16 +50,31 @@ try {
       currently: "CurrentNote",
       skills: "SkillGroup",
       experience: "ExperienceEntry",
+      "about-photos": "PersonalPhoto",
     };
     await writeFile(
       path.join(root, `src/content/${name}.ts`),
-      `import type { ${types[name]} } from "@/types/content"; export const ${name}: ${name === "profile" ? "Profile" : `readonly ${types[name]}[]`} = ${JSON.stringify(value)};\n`,
+      `import type { ${types[name]} } from "@/types/content"; export const ${name === "about-photos" ? "moments" : name}: ${name === "profile" ? "Profile" : `readonly ${types[name]}[]`} = ${JSON.stringify(value)};\n`,
     );
   };
   await content("projects", projects);
   await content("journal", journal);
   await content("profile", {
     ...profile,
+    portrait: {
+      src: "/images/fixture-portrait.png",
+      alt: "Synthetic portrait layout fixture",
+      width: 600,
+      height: 800,
+      caption: "Test-only portrait caption",
+    },
+    interests: [
+      {
+        title: "Business & Finance",
+        description: "Test-only authentic-description slot.",
+      },
+      { title: "Technology", description: "" },
+    ],
     resume: { url: "/fixture-resume.pdf", label: "Download resume" },
   });
   await content("currently", [
@@ -133,6 +149,54 @@ try {
       chunk("IEND", Buffer.alloc(0)),
     ]),
   );
+  // Solid-color layout fixtures only; never committed as personal photographs.
+  for (const [filename, width, height, color] of [
+    ["fixture-portrait.png", 600, 800, [220, 235, 250, 255]],
+    ["fixture-landscape.png", 900, 600, [255, 240, 184, 255]],
+  ]) {
+    const ihdr = Buffer.from(header);
+    ihdr.writeUInt32BE(width, 0);
+    ihdr.writeUInt32BE(height, 4);
+    const scanlines = Buffer.alloc((width * 4 + 1) * height);
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        scanlines.set(color, y * (width * 4 + 1) + 1 + x * 4);
+      }
+    await writeFile(
+      path.join(root, "public/images", filename),
+      Buffer.concat([
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+        chunk("IHDR", ihdr),
+        chunk("IDAT", deflateSync(scanlines)),
+        chunk("IEND", Buffer.alloc(0)),
+      ]),
+    );
+  }
+  await content("about-photos", [
+    {
+      src: "/images/fixture-landscape.png",
+      alt: "Synthetic landscape layout fixture",
+      width: 900,
+      height: 600,
+      caption: "Test-only landscape caption",
+      order: 20,
+    },
+    {
+      src: "/images/fixture-portrait.png",
+      alt: "Synthetic gallery portrait fixture",
+      width: 600,
+      height: 800,
+      order: 10,
+    },
+    {
+      src: "/images/missing.png",
+      alt: "Missing fixture",
+      width: 600,
+      height: 800,
+      order: 1,
+    },
+    { src: "/images/fixture.png", alt: "", width: 1, height: 1, order: 2 },
+  ]);
   const fixtureProjects = projects.map((p, i) =>
     i === 0
       ? {
@@ -185,9 +249,10 @@ try {
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
       : {}),
   });
-  const page = await browser.newPage({
+  const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });
+  const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(base);
@@ -204,6 +269,72 @@ try {
     0,
   );
   assert.equal(await page.getByText("Test-only current note.").count(), 1);
+  await page.goto(`${base}/about`);
+  await expect(
+    page.getByRole("img", {
+      name: "Synthetic portrait layout fixture",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Test-only portrait caption", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Test-only authentic-description slot."),
+  ).toBeVisible();
+  const gallery = page.getByRole("region", { name: "Little moments." });
+  await expect(gallery.getByRole("img")).toHaveCount(2);
+  assert.deepEqual(
+    await gallery
+      .getByRole("img")
+      .evaluateAll((images) => images.map((image) => image.alt)),
+    [
+      "Synthetic gallery portrait fixture",
+      "Synthetic landscape layout fixture",
+    ],
+  );
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate((theme) => {
+      localStorage.setItem("theme", theme);
+    }, theme);
+    await page.reload();
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    assert.deepEqual(
+      result.violations,
+      [],
+      `Configured photo accessibility: ${theme}`,
+    );
+    for (const width of [320, 375, 430, 768, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.evaluate(() => document.fonts.ready);
+      assert(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      );
+      for (const image of await page.locator("main img").all()) {
+        await image.scrollIntoViewIfNeeded();
+        await expect(image).toHaveJSProperty("complete", true);
+        assert(await image.evaluate((image) => image.naturalWidth > 0));
+        const box = await image.boundingBox();
+        const ratio = await image.evaluate(
+          (image) =>
+            Number(image.getAttribute("width")) /
+            Number(image.getAttribute("height")),
+        );
+        assert(
+          Math.abs(box.width / box.height - ratio) < 0.01,
+          "Photos retain their aspect ratio",
+        );
+      }
+      await page.screenshot({
+        path: `/tmp/xy-sprint31-photos-${width}-${theme}.png`,
+        fullPage: true,
+      });
+    }
+  }
   await page.goto(`${base}/work`);
   assert.equal(await page.locator("main article").count(), 2);
   assert.equal(
@@ -323,7 +454,7 @@ try {
   }
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: isolated production fixtures verify real category navigation, featured selection, project/article details, omitted sections, safe links, optional image, skills/experience/current notes, social visibility, PDF download, published-only sitemap, direct draft 404s, and responsive detail pages.",
+    "PASS: isolated production fixtures verify real category navigation, featured selection, project/article details, omitted sections, safe links, optional image, skills/experience/current notes, social visibility, PDF download, published-only sitemap, direct draft 404s, responsive detail pages, configured portrait/gallery ordering, captions, invalid-photo omission, and photo aspect ratios/accessibility in both themes at five widths.",
   );
 } catch (error) {
   if (serverLog) console.error(serverLog);
