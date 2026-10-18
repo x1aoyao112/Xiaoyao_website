@@ -16,23 +16,15 @@ export const profile: Profile = {
     endYear: 2030,
     expected: true,
   },
+  // Confirmed topics only. Add personal explanations when ready; empty descriptions stay hidden.
   interests: [
-    {
-      title: "Business & Finance",
-      description: "An interest in how business and finance connect.",
-    },
-    {
-      title: "Technology",
-      description:
-        "Another area I'd like to explore through learning and projects.",
-    },
-    {
-      title: "Ideas & Projects",
-      description: "A space to collect ideas and share personal projects.",
-    },
-    { title: "Life Beyond School", description: "" }, // TODO: Add confirmed interests only.
+    { title: "Business & Finance", description: "" },
+    { title: "Technology", description: "" },
+    { title: "Ideas & Projects", description: "" },
   ],
-  // TODO: Add a real local portrait with descriptive alt text when supplied.
+  // Add a real portrait here: { src, alt, width, height, caption? }.
+  // Store the file in public/images/ and use its original pixel dimensions.
+  portrait: undefined,
   beyondAcademics: [],
   resume: { url: "", label: "Download resume" },
 };
