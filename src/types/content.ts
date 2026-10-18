@@ -4,6 +4,8 @@ export type ContentImage = Readonly<{
   width: number;
   height: number;
   caption?: string;
+  order?: number;
+  kind?: "photo" | "graphic";
 }>;
 export type PersonalPhoto = ContentImage & Readonly<{ order: number }>;
 

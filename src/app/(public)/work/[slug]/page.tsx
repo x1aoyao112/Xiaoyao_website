@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { publicProjects } from "@/content/public";
 import { pageMetadata } from "@/lib/metadata";
+import { orderedImages } from "@/lib/public-files";
 import { safeExternalUrl } from "@/lib/content";
 import { PageIntro } from "@/components/portfolio/page-intro";
 import { PortfolioImage } from "@/components/portfolio/content-image";
@@ -56,7 +57,7 @@ export default async function ProjectPage({
             </p>
           </section>
         )}
-        {(project.artifacts ?? []).map((image) => (
+        {orderedImages(project.artifacts ?? []).map((image) => (
           <PortfolioImage key={image.src} image={image} cover />
         ))}
         {links.length > 0 && (

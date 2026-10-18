@@ -201,16 +201,91 @@ try {
     i === 0
       ? {
           ...p,
+          artifacts: [
+            {
+              src: "/images/fixture-landscape.png",
+              alt: "Project second screenshot",
+              width: 900,
+              height: 600,
+              order: 20,
+              caption: "Second screenshot caption",
+              kind: "graphic",
+            },
+            {
+              src: "/images/fixture-portrait.png",
+              alt: "Project first photograph",
+              width: 600,
+              height: 800,
+              order: 10,
+              caption: "First photograph caption",
+            },
+            {
+              src: "/images/missing.png",
+              alt: "Missing screenshot",
+              width: 900,
+              height: 600,
+              order: 1,
+            },
+          ],
           coverImage: {
-            src: "/images/fixture.png",
+            src: "/images/fixture-landscape.png",
             alt: "Test-only fixture image",
-            width: 1,
-            height: 1,
+            width: 900,
+            height: 600,
           },
         }
       : p,
   );
   await content("projects", fixtureProjects);
+  await content(
+    "journal",
+    journal.map((entry, i) =>
+      i === 0
+        ? {
+            ...entry,
+            coverImage: {
+              src: "/images/fixture-landscape.png",
+              alt: "Journal cover photograph",
+              width: 900,
+              height: 600,
+              caption: "Journal cover caption",
+            },
+            sections: [
+              ...entry.sections,
+              {
+                paragraphs: [],
+                image: {
+                  src: "/images/fixture-portrait.png",
+                  alt: "Journal body photograph",
+                  width: 600,
+                  height: 800,
+                  caption: "Journal body caption",
+                },
+              },
+              {
+                paragraphs: [],
+                image: {
+                  src: "/images/fixture-landscape.png",
+                  alt: "Journal body diagram",
+                  width: 900,
+                  height: 600,
+                  kind: "graphic",
+                },
+              },
+              {
+                paragraphs: [],
+                image: {
+                  src: "/images/missing.png",
+                  alt: "Missing journal image",
+                  width: 900,
+                  height: 600,
+                },
+              },
+            ],
+          }
+        : entry,
+    ),
+  );
   console.log("Building isolated published/draft fixtures.");
   await run(
     process.platform === "win32" ? "npm.cmd" : "npm",
@@ -452,9 +527,145 @@ try {
       );
     }
   }
+  // Exercise every image consumer with actual optimized assets in a disposable site.
+  for (const theme of ["light", "dark"]) {
+    await page.evaluate((theme) => localStorage.setItem("theme", theme), theme);
+    for (const width of [320, 375, 430, 768, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      for (const route of [
+        "/",
+        "/about",
+        "/work",
+        "/work/published-fixture",
+        "/journal",
+        "/journal/published-note",
+      ]) {
+        await page.goto(base + route);
+        assert(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+        );
+        for (const img of await page.locator("main img").all()) {
+          await img.scrollIntoViewIfNeeded();
+          await expect(img).toHaveJSProperty("complete", true);
+          try {
+            await expect
+              .poll(() => img.evaluate((img) => img.naturalWidth), {
+                message: `Image must load: ${route} ${await img.getAttribute("alt")}`,
+              })
+              .toBeGreaterThan(0);
+          } catch (error) {
+            const state = await img.evaluate((img) => ({
+              src: img.currentSrc || img.src,
+              alt: img.alt,
+              complete: img.complete,
+              loading: img.loading,
+              width: img.clientWidth,
+              height: img.clientHeight,
+            }));
+            const response = await fetch(state.src);
+            console.error(
+              "Image failure diagnostics:",
+              state,
+              response.status,
+              response.headers.get("content-type"),
+              response.ok ? "" : (await response.text()).slice(0, 500),
+            );
+            await page.screenshot({
+              path: "/tmp/xy-image-failure.png",
+              fullPage: true,
+            });
+            throw error;
+          }
+          const styles = await img.evaluate((img) => {
+            const s = getComputedStyle(img);
+            return {
+              shadow: s.boxShadow,
+              photo: img.classList.contains("editorial-photo"),
+              fit: s.objectFit,
+              radius: s.borderRadius,
+              parentShadow: getComputedStyle(img.parentElement).boxShadow,
+              captionShadow: img.parentElement.querySelector("figcaption")
+                ? getComputedStyle(
+                    img.parentElement.querySelector("figcaption"),
+                  ).boxShadow
+                : "none",
+            };
+          });
+          assert.equal(
+            styles.photo,
+            !/diagram|second screenshot/.test(await img.getAttribute("alt")),
+          );
+          assert.equal(styles.shadow === "none", !styles.photo);
+          if (styles.photo)
+            assert(
+              styles.shadow.includes(
+                theme === "light" ? "20, 45, 78" : "0, 0, 0",
+              ),
+            );
+          assert.equal(styles.parentShadow, "none");
+          assert.equal(styles.captionShadow, "none");
+          assert.notEqual(styles.radius, "0px");
+          if (styles.fit !== "cover") {
+            const box = await img.boundingBox();
+            const ratio = await img.evaluate(
+              (img) =>
+                Number(img.getAttribute("width")) /
+                Number(img.getAttribute("height")),
+            );
+            assert(Math.abs(box.width / box.height - ratio) < 0.01);
+          }
+        }
+        if (route === "/") {
+          await expect(
+            page.getByRole("img", {
+              name: "Test-only fixture image",
+              exact: true,
+            }),
+          ).toHaveCount(1);
+          await expect(
+            page.getByRole("img", {
+              name: "Journal cover photograph",
+              exact: true,
+            }),
+          ).toHaveCount(1);
+        }
+        if (route === "/work/published-fixture") {
+          assert.deepEqual(
+            await page
+              .locator("main img")
+              .evaluateAll((images) => images.map((img) => img.alt)),
+            [
+              "Test-only fixture image",
+              "Project first photograph",
+              "Project second screenshot",
+            ],
+          );
+          await expect(
+            page.getByText("First photograph caption", { exact: true }),
+          ).toBeVisible();
+          await expect(
+            page.getByText("Second screenshot caption", { exact: true }),
+          ).toBeVisible();
+        }
+        if (route === "/journal/published-note") {
+          await expect(page.locator("main img")).toHaveCount(3);
+          await expect(
+            page.getByText("Journal body caption", { exact: true }),
+          ).toBeVisible();
+        }
+        if (width === 1440 && route === "/work/published-fixture")
+          await page.screenshot({
+            path: `/tmp/xy-image-management-${theme}.png`,
+            fullPage: true,
+          });
+      }
+    }
+  }
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: isolated production fixtures verify real category navigation, featured selection, project/article details, omitted sections, safe links, optional image, skills/experience/current notes, social visibility, PDF download, published-only sitemap, direct draft 404s, responsive detail pages, configured portrait/gallery ordering, captions, invalid-photo omission, and photo aspect ratios/accessibility in both themes at five widths.",
+    "PASS: isolated production fixtures verify real category navigation, featured selection, project/article details, omitted sections, safe links, optional image, skills/experience/current notes, social visibility, PDF download, published-only sitemap, direct draft 404s, responsive detail pages, configured portrait/gallery ordering, captions, invalid-photo omission, photo aspect ratios/accessibility in both themes at five widths, all homepage/project/journal image consumers, project screenshot ordering, graphic shadow opt-out, and non-cumulative theme-aware photo shadows.",
   );
 } catch (error) {
   if (serverLog) console.error(serverLog);

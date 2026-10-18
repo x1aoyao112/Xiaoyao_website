@@ -25,3 +25,18 @@ export function validImage(
     return;
   return manifest.images.includes(image.src) ? image : undefined;
 }
+
+// Unspecified order follows array position. Ties preserve array order.
+export function orderedImages<T extends ContentImage>(
+  images: readonly T[],
+  manifest: AssetManifest = assets,
+): T[] {
+  return images
+    .map((image, index) => ({ image, order: image.order ?? index }))
+    .filter(
+      ({ image, order }) =>
+        validImage(image, manifest) && Number.isFinite(order),
+    )
+    .toSorted((a, b) => a.order - b.order)
+    .map(({ image }) => image);
+}

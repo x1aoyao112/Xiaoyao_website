@@ -15,7 +15,11 @@ import {
   socialDestinations,
   publicContentPaths,
 } from "../src/lib/content.ts";
-import { validImage, validResume } from "../src/lib/public-files.ts";
+import {
+  validImage,
+  validResume,
+  orderedImages,
+} from "../src/lib/public-files.ts";
 import { scanPublicAssets } from "../scripts/prepare-assets.mjs";
 import { isActivePath } from "../src/config/navigation.ts";
 
@@ -182,4 +186,44 @@ test("active navigation handles detail paths without matching unrelated routes",
   assert.equal(isActivePath("/work/published-fixture", "/work"), true);
   assert.equal(isActivePath("/workshop", "/work"), false);
   assert.equal(isActivePath("/about", "/"), false);
+});
+
+test("gallery order is editable, stable, optional, validated and non-mutating", () => {
+  const manifest = { images: ["/a.png", "/b.png", "/c.png"], resumes: [] };
+  const image = (src, order) => ({
+    src,
+    alt: "Fixture image",
+    width: 900,
+    height: 600,
+    ...(order === undefined ? {} : { order }),
+  });
+  const entries = [
+    image("/a.png", 20),
+    image("/b.png", 10),
+    image("/c.png", 10),
+  ];
+  assert.deepEqual(
+    orderedImages(entries, manifest).map((i) => i.src),
+    ["/b.png", "/c.png", "/a.png"],
+  );
+  assert.equal(entries[0].src, "/a.png");
+  assert.deepEqual(
+    orderedImages([image("/c.png"), image("/a.png")], manifest).map(
+      (i) => i.src,
+    ),
+    ["/c.png", "/a.png"],
+  );
+  assert.deepEqual(
+    orderedImages(
+      [
+        image("/missing.png", 0),
+        image("/a.png", NaN),
+        image("/b.png", Infinity),
+        { ...image("/c.png", 1), alt: "" },
+      ],
+      manifest,
+    ),
+    [],
+  );
+  assert.deepEqual(orderedImages([], manifest), []);
 });

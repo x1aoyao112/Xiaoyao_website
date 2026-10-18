@@ -30,6 +30,7 @@
   --financial-emphasis: var(--gold);
   --radius: 1.25rem;
   --duration: 180ms;
+  --photo-shadow: 0 8px 24px rgb(20 45 78 / 7%), 0 2px 6px rgb(20 45 78 / 3.5%);
 }
 
 .dark {
@@ -45,6 +46,7 @@
   --ring: var(--gold);
   --editorial: var(--powder);
   --terminal: #0c1420;
+  --photo-shadow: 0 8px 24px rgb(0 0 0 / 18%), 0 2px 6px rgb(0 0 0 / 10%);
 }
 
 @theme inline {
@@ -129,6 +131,10 @@
   }
   .body-copy {
     @apply text-base leading-7;
+  }
+  /* On the image itself only: captions and surrounding cards stay shadow-free. */
+  .editorial-photo {
+    box-shadow: var(--photo-shadow);
   }
   .ui-transition {
     transition-duration: var(--duration);

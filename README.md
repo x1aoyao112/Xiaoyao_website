@@ -103,6 +103,52 @@ Store genuine images in `public/images/` using simple filenames (letters, digits
 
 No portrait produces a text-first introduction; no valid gallery entries hides **Little moments.** entirely. A missing file, blank alt text, invalid dimensions or invalid gallery order never creates a public empty frame. No stock or test photographs are bundled on the site. Keep an interest's `description` empty until you have your own explanation; its confirmed topic can still appear without filler. Remove its whole entry to hide the topic.
 
+### Image configuration across the public site
+
+All references stay in `src/content/`; no image paths need to be edited in layout components.
+
+| Area                         | Editable field                               | Behavior                                                                                         |
+| ---------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| About introduction           | `profile.ts` → `profile.portrait`            | Optional portrait; removing it restores the text-first introduction                              |
+| Little Moments               | `about-photos.ts` → `moments[]`              | Gallery ordered by numeric `order`; empty/invalid entries stay hidden                            |
+| Project card + detail cover  | `projects.ts` → each project's `coverImage`  | One record supplies Work, featured homepage cards, relevant recruiter cards, and project details |
+| Project screenshots/gallery  | `projects.ts` → each project's `artifacts[]` | Add/remove records, reorder the array, or use optional numeric `order`                           |
+| Journal card + article cover | `journal.ts` → each entry's `coverImage`     | One record supplies Journal, homepage previews, and the article                                  |
+| Journal body images          | `journal.ts` → `sections[].image`            | Optional image per section; reorder sections to move images alongside their text                 |
+| Optional About reflections   | `profile.ts` → `beyondAcademics[].image`     | Same section-image format; image-only sections can use `paragraphs: []`                          |
+
+Each image record supports `src`, descriptive `alt`, original positive integer `width` and `height`, and optional `caption`. For project galleries, optional `order` sorts ascending; omitted values use the original array index, and ties preserve array order. For clarity, either reorder the array without `order`, or give every gallery item an explicit value (10, 20, 30). Little Moments retains its required `order` field. Invalid explicit orders are excluded. A single cover's `order` has no effect; journal section order follows the section array.
+
+For example, add these fields inside a real project record (supply your own file and alt text):
+
+```ts
+coverImage: {
+  src: "/images/project-cover.jpg", alt: "Your accurate image description",
+  width: 1600, height: 1200, caption: "",
+},
+artifacts: [
+  {
+    src: "/images/project-detail.png", alt: "Your accurate screenshot description",
+    width: 1440, height: 900, caption: "", order: 10, kind: "graphic",
+  },
+],
+```
+
+Journal `coverImage` uses the same record. Put a body image in a section with `{ heading, paragraphs, image }`; omit `heading` if unnecessary and use `paragraphs: []` for an image-only section. Add images only to genuine content; draft/published rules are unchanged.
+
+Photos share a soft, theme-aware shadow applied once to the image itself. Set `kind: "graphic"` on diagrams, logos, or other non-photographic graphics to omit the shadow. The default is photographic styling. Captions and containers have no added shadow. Card thumbnails retain the existing 4:3 `object-cover` crop without stretching; portraits, gallery images, detail covers and body images preserve native aspect ratios. Supply the original file dimensions even when a card uses a crop. No new hover animation is added.
+
+**Exact upload/replacement workflow:**
+
+1. Create a feature branch; add your image under `public/images/` (PNG, JPG/JPEG, WebP, or AVIF). Prefer suitably compressed originals. Use a new filename when replacing an image so browser/CDN caches cannot serve the previous version.
+2. Edit the field in the table above. Paths start with `/images/`, **not** `/public/images/`. Update dimensions and alt text for each replacement; adjust captions and gallery order as needed.
+3. To remove an image, remove its optional field (or set it to `undefined`); remove gallery items from their array. Remove unused public files too if you no longer want them accessible by URL. For Little Moments, remove all items to restore the existing exported empty array. This does not require layout changes.
+4. Run `npm run assets:prepare` whenever files change while development is running, then `npm run dev`. Development/build hooks also prepare assets automatically on startup. Only existing local assets with supported file signatures and valid metadata render; this signature check is not a full corruption check, so verify your uploaded image loads locally.
+5. Run `npm run format:check`, `npm run check`, and `npm run build`. Inspect your changed pages on mobile and desktop in both themes.
+6. Commit the content records and image files, push the branch, and open a PR. The generated asset inventory stays ignored. Open the Vercel preview from the PR, verify the images and captions, then merge when satisfied. With the existing Git integration, merging into `main` triggers production deployment. Keep Vercel's build command as `npm run build`; no backend or secrets are needed.
+
+Empty/missing/invalid images render no frame or caption. Homepage previews reuse the same cover configuration automatically after rebuilding; there is no separate homepage image setting. The homepage hero has no photographic image configuration and stays unchanged.
+
 ### Homepage previews
 
 The homepage shows Selected Work only when published **featured** projects exist, Journal only when published entries exist, and Currently only when genuine activities are configured. Empty previews omit their headings, links and spacing. Full Work and Journal routes remain available with minimal empty states.

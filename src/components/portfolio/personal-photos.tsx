@@ -3,7 +3,8 @@ import type {
   ContentImage,
   PersonalPhoto as PersonalPhotoEntry,
 } from "@/types/content";
-import { validImage } from "@/lib/public-files";
+import { cn } from "@/lib/utils";
+import { validImage, orderedImages } from "@/lib/public-files";
 
 export function PersonalPhoto({
   image,
@@ -12,6 +13,7 @@ export function PersonalPhoto({
   image: ContentImage;
   portrait?: boolean;
 }) {
+  if (!validImage(image)) return null;
   return (
     <figure>
       <Image
@@ -21,7 +23,10 @@ export function PersonalPhoto({
         height={image.height}
         sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1279px) 45vw, 480px"
         preload={portrait}
-        className="h-auto w-full rounded-2xl"
+        className={cn(
+          "h-auto w-full rounded-2xl",
+          image.kind !== "graphic" && "editorial-photo",
+        )}
       />
       {image.caption?.trim() && (
         <figcaption className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
@@ -37,9 +42,7 @@ export function LittleMoments({
 }: {
   photos: readonly PersonalPhotoEntry[];
 }) {
-  const images = photos
-    .filter((photo) => validImage(photo) && Number.isFinite(photo.order))
-    .toSorted((a, b) => a.order - b.order);
+  const images = orderedImages(photos);
   if (!images.length) return null;
   return (
     <section className="mt-20 sm:mt-28" aria-labelledby="moments-heading">
